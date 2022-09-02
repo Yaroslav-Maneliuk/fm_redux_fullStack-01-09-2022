@@ -6,7 +6,7 @@ import userReducer from "./userReducer";
 const rootReducer = combineReducers({
   counter: counterReducer,
   toDo: toDoReducer,
-  users: userReducer,
+  usersState: userReducer,
 });
 
 export default rootReducer;

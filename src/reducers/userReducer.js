@@ -11,6 +11,7 @@ function userReducer(state = initialState, action) {
       return {
         ...state,
         isFatching: true,
+        error: null
       };
     }
     case ACTION_TYPES.CREATE_USER_SUCCESS: {
@@ -18,6 +19,7 @@ function userReducer(state = initialState, action) {
       return {
         ...state,
         isFatching: false,
+        error: null,
         users:[...state.users, user]
       };
     }
