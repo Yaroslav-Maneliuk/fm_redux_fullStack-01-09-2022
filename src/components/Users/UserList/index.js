@@ -1,18 +1,17 @@
 import React, { useEffect } from "react";
+import { bindActionCreators } from "redux";
 import { useSelector, useDispatch } from "react-redux";
-// import { connect } from "react-redux";
 import * as ActionsUserCreators from "../../../actions/userCreators";
 
 const UserList = (props) => {
   const { users, isFetching, error } = useSelector(
     ({ usersState }) => usersState
   );
-  const dispatch = useDispatch();
-  const getUsersRequestDispatch = ({limit, offset})=>dispatch(ActionsUserCreators.getUsersRequest({limit, offset}))
-
-  // const { users, isFetching, error, getUsersRequestDispatch } = props;
-  const loadMore = () => getUsersRequestDispatch({ offset: users.length });
-  // useEffect(() => {getUsersRequestDispatch({})}, [getUsersRequestDispatch]);
+  // const dispatch = useDispatch();
+  const { getUsersRequest } = bindActionCreators(ActionsUserCreators, useDispatch());
+  // const getUsersRequestDispatch = ({ limit, offset }) =>
+    // dispatch(ActionsUserCreators.getUsersRequest({ limit, offset }));
+  const loadMore = () => getUsersRequest({ offset: users.length });
   useEffect(() => {
     loadMore();
   }, []);
@@ -38,11 +37,3 @@ const UserList = (props) => {
 };
 
 export default UserList;
-
-// const mapStateToProps = ({ usersState }) => usersState;
-// const mapDispatchToProps = (dispatch) => ({
-//   getUsersRequestDispatch: ({ limit, offset }) =>
-//     dispatch(ActionsUserCreators.getUsersRequest({ limit, offset })),
-// });
-
-// export default connect(mapStateToProps, mapDispatchToProps)(UserList);
