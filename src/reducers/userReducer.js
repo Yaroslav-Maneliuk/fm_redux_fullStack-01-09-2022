@@ -1,61 +1,52 @@
+import produce from "immer";
 import ACTION_TYPES from "../actions/actionTypes";
+
 const initialState = {
   users: [],
-  isFatching: false,
+  isFetching: false,
   error: null,
 };
 
+const handlerRequest = produce((draft, action) => {
+  draft.isFetching = true;
+  draft.error = null;
+});
+
+const handlerError = produce((draft, action) => {
+  const {
+    payload: { error },
+  } = action;
+  draft.isFetching = false;
+  draft.error = error;
+});
+
+const handlers = {
+  [ACTION_TYPES.GET_USERS_REQUEST]: handlerRequest,
+  [ACTION_TYPES.CREATE_USER_REQUEST]: handlerRequest,
+  [ACTION_TYPES.GET_USERS_SUCCESS]: produce((draft, action) => {
+    const {
+      payload: { users },
+    } = action;
+    draft.isFetching = false;
+    draft.users.push(...users);
+  }),
+  [ACTION_TYPES.CREATE_USER_SUCCESS]: produce((draft, action) => {
+    const {
+      payload: { user },
+    } = action;
+    draft.isFetching = false;
+    draft.users.push(user);
+  }),
+  [ACTION_TYPES.GET_USERS_ERROR]: handlerError,
+  [ACTION_TYPES.CREATE_USER_ERROR]: handlerError,
+};
+
 function userReducer(state = initialState, action) {
-  switch (action.type) {
-    case ACTION_TYPES.CREATE_USER_REQUEST: {
-      return {
-        ...state,
-        isFatching: true,
-        error: null
-      };
-    }
-    case ACTION_TYPES.CREATE_USER_SUCCESS: {
-      const { values: user } = action;
-      return {
-        ...state,
-        isFatching: false,
-        error: null,
-        users:[...state.users, user]
-      };
-    }
-    case ACTION_TYPES.CREATE_USER_ERROR: {
-      const { error } = action;
-      return {
-        ...state,
-        isFatching: false,
-        error
-      };
-    }
-    case ACTION_TYPES.GET_USERS_REQUEST:{
-      return {...state,
-        isFetching:true,
-        error:null}
-    }
-    case ACTION_TYPES.GET_USERS_SUCCESS:{
-      const {payload:{users:newUsers}} = action;
-      return {
-        ...state,
-        isFetching:false,
-        error:null,
-        users:[...state.users, ...newUsers]
-      }
-    }
-    case ACTION_TYPES.GET_USERS_ERROR:{
-      const {payload:{error}} = action;
-      return {
-        ...state,
-        isFetching:false,
-        error
-      }
-    }
-    default:
-      return state;
+  const handler = handlers[action.type];
+  if (handler) {
+    return handler(state, action);
   }
+  return state;
 }
 
 export default userReducer;

@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
-// import { connect } from "react-redux";
 import { Formik, Form, Field } from "formik";
 import * as ActionsUserCreators from "../../../actions/userCreators";
 
@@ -12,7 +11,7 @@ const UserForm = (props) => {
   );
   const onSubmit = (values, formikBag) => {
     console.log("post:", values);
-    createUserRequest(values);
+    createUserRequest({values});
     formikBag.resetForm();
   };
   return (
